@@ -1,6 +1,5 @@
 const express = require('express')
-const { ObjectId } = require('mongodb');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const cors = require('cors')
 const app = express()
@@ -43,8 +42,12 @@ async function run() {
           delete userData._id; // Remove _id from the userData to prevent overriding it
     
           const result = await userCollection.updateOne(
-            { _id: new ObjectId(userId) },
-            { $set: userData }
+            { 
+              _id: new ObjectId(userId) 
+            },
+            { 
+              $set: userData 
+            }
           );
     
           if (result.matchedCount === 0) {
