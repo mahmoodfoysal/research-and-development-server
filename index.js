@@ -30,6 +30,8 @@ async function run() {
 
     const database = client.db('research-and-development');
     const userCollection = database.collection("users");
+    const studentCollection = database.collection("student-info");
+    const studentRecordCollection = database.collection("student-record");
 
 
     app.post('/users', async (req, res) => {
@@ -65,9 +67,80 @@ async function run() {
       }
     });
 
+    app.post('/student-info', async (req, res) => {
+      const studentData = req.body;
+    
+      try {
+        if (studentData._id) {
+          // Update operation
+          const studentId = studentData._id;
+          delete studentData._id; // Remove _id from the userData to prevent overriding it
+    
+          const result = await studentCollection.updateOne(
+            { 
+              _id: new ObjectId(studentId) 
+            },
+            { 
+              $set: studentData 
+            }
+          );
+    
+          if (result.matchedCount === 0) {
+            return res.status(404).send({ error: 'User not found' });
+          }
+    
+          res.send(result);
+        } else {
+          // Create operation
+          const result = await studentCollection.insertOne(studentData);
+          res.status(201).send(result);
+        }
+      } catch (error) {
+        res.status(500).send({ error: 'Failed to create or update user' });
+      }
+    });
+    app.post('/student-record', async (req, res) => {
+      const studentData = req.body;
+    
+      try {
+        if (studentData._id) {
+          // Update operation
+          const studentId = studentData._id;
+          delete studentData._id; // Remove _id from the userData to prevent overriding it
+    
+          const result = await studentRecordCollection.updateOne(
+            { 
+              _id: new ObjectId(studentId) 
+            },
+            { 
+              $set: studentData 
+            }
+          );
+    
+          if (result.matchedCount === 0) {
+            return res.status(404).send({ error: 'User not found' });
+          }
+    
+          res.send(result);
+        } else {
+          // Create operation
+          const result = await studentRecordCollection.insertOne(studentData);
+          res.status(201).send(result);
+        }
+      } catch (error) {
+        res.status(500).send({ error: 'Failed to create or update user' });
+      }
+    });
+
     app.get('/users', async(req, res) => {
       const getUser = userCollection.find();
       const result = await getUser.toArray();
+      res.send(result);
+    });
+
+    app.get('/student-info', async(req, res) => {
+      const getStudentInfo = studentCollection.find();
+      const result = await getStudentInfo.toArray();
       res.send(result);
     });
 
