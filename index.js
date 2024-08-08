@@ -29,37 +29,36 @@ async function run() {
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
     const database = client.db('research-and-development');
-    const userCollection = database.collection("users");
+    const employeeCollection = database.collection("employee");
     const studentCollection = database.collection("student-info");
     const studentRecordCollection = database.collection("student-record");
 
 
-    app.post('/users', async (req, res) => {
-      const userData = req.body;
+    app.post('/employees', async (req, res) => {
+      const empData = req.body;
     
       try {
-        if (userData._id) {
+        if (empData._id) {
           // Update operation
-          const userId = userData._id;
-          delete userData._id; // Remove _id from the userData to prevent overriding it
+          const userId = empData._id;
+          delete empData._id; // Remove _id from the userData to prevent overriding it
     
-          const result = await userCollection.updateOne(
+          const result = await employeeCollection.updateOne(
             { 
               _id: new ObjectId(userId) 
             },
             { 
-              $set: userData 
+              $set: empData 
             }
           );
     
           if (result.matchedCount === 0) {
             return res.status(404).send({ error: 'User not found' });
           }
-    
           res.send(result);
         } else {
           // Create operation
-          const result = await userCollection.insertOne(userData);
+          const result = await employeeCollection.insertOne(empData);
           res.status(201).send(result);
         }
       } catch (error) {
@@ -132,8 +131,8 @@ async function run() {
       }
     });
 
-    app.get('/users', async(req, res) => {
-      const getUser = userCollection.find();
+    app.get('/employees', async(req, res) => {
+      const getUser = employeeCollection.find();
       const result = await getUser.toArray();
       res.send(result);
     });
